@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.vite/
+*.local
+*.tsbuildinfo
+.playwright-mcp/
+*.png
+
+# Environment variables — NEVER commit these
+.env
+.env.local
+.env.*.local
