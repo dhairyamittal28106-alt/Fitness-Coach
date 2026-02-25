@@ -1,316 +1,240 @@
-:root {
-  --bg: #0b1020;
-  --panel: rgba(255, 255, 255, 0.06);
-  --panel2: rgba(255, 255, 255, 0.04);
-  --border: rgba(255, 255, 255, 0.10);
-  --text: rgba(255, 255, 255, 0.92);
-  --muted: rgba(255, 255, 255, 0.62);
-
-  --shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
-  --shadow2: 0 10px 30px rgba(0, 0, 0, 0.30);
-
-  --r12: 12px;
-  --r16: 16px;
-  --r20: 20px;
-
-  --accent1: #4f46e5;
-  --accent2: #06b6d4;
-  --accent3: #22c55e;
-
-  --gap: 16px;
-  --sidebarW: 280px;
-}
-
-body {
-  background: radial-gradient(1200px 800px at 15% 10%, rgba(79, 70, 229, .25), transparent 55%),
-    radial-gradient(1000px 700px at 85% 40%, rgba(6, 182, 212, .18), transparent 60%),
-    var(--bg);
-  color: var(--text);
-}
+/* ===============================
+   GLOBAL LAYOUT
+================================ */
 
 .shell {
+  display: flex;
   min-height: 100vh;
-  display: grid;
-  grid-template-columns: var(--sidebarW) 1fr;
+  background:
+    radial-gradient(1000px 600px at 20% 10%, rgba(95,197,255,0.12), transparent),
+    radial-gradient(1000px 600px at 90% 80%, rgba(160,120,255,0.10), transparent),
+    #0a0a10;
+  color: #f3f6ff;
+  font-family: Inter, system-ui, sans-serif;
 }
 
+/* ===============================
+   SIDEBAR
+================================ */
+
 .sidebar {
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  padding: 22px 18px;
-  border-right: 1px solid var(--border);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.03));
-  backdrop-filter: blur(14px);
+  width: 270px;
+  padding: 18px;
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  border-right: 1px solid rgba(240, 232, 232, 0.08);
+  background: rgba(51, 51, 51, 0.75);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
 }
 
 .brandRow {
   display: flex;
-  align-items: center;
   gap: 12px;
-  padding: 10px 10px;
-  border-radius: var(--r16);
-  background: var(--panel2);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  align-items: center;
+  padding: 12px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
 }
 
 .brandMark {
-  width: 42px;
-  height: 42px;
-  border-radius: 14px;
-  background: linear-gradient(135deg, var(--accent1), var(--accent2));
-  box-shadow: 0 12px 24px rgba(79, 70, 229, .25);
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg,#5fc5ff,#a078ff);
 }
 
 .brandTitle {
-  font-size: 15px;
-  font-weight: 700;
-  letter-spacing: 0.2px;
+  font-weight: 800;
 }
 
 .brandSub {
-  margin-top: 2px;
   font-size: 12px;
-  color: var(--muted);
+  opacity: 0.6;
 }
 
+/* ===============================
+   NAVIGATION
+================================ */
+
 .navList {
+  margin-top: 18px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding-top: 4px;
+  gap: 8px;
 }
 
 .nav {
-  appearance: none;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  background: rgba(255, 255, 255, 0.03);
-  color: var(--text);
-  border-radius: 14px;
-  padding: 12px 12px;
   display: flex;
   align-items: center;
   gap: 12px;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid transparent;
+  background: rgba(255,255,255,0.04);
   cursor: pointer;
-  transition: transform .18s ease, background .18s ease, border-color .18s ease, box-shadow .18s ease;
+  transition: 0.25s;
 }
 
 .nav:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.12);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow2);
+  border-color: rgba(160,120,255,0.25);
+  transform: translateX(4px);
+}
+
+.nav.active {
+  background: rgba(95,197,255,0.15);
+  border-color: rgba(95,197,255,0.25);
 }
 
 .navIconWrap {
-  width: 40px;
-  height: 40px;
-  border-radius: 14px;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(0,0,0,0.2);
   position: relative;
-}
-
-/* Pulsing dot shown on nav icon when model is loading in background */
-.nav-loading-dot {
-  position: absolute;
-  top: -3px;
-  right: -3px;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--accent2);
-  border: 2px solid var(--bg);
-  animation: pulse-dot 1.4s ease-in-out infinite;
-}
-
-@keyframes pulse-dot {
-
-  0%,
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-
-  50% {
-    opacity: 0.6;
-    transform: scale(1.25);
-  }
-}
-
-.navIconSvg {
-  opacity: .92;
 }
 
 .navLabel {
   font-weight: 600;
-  letter-spacing: 0.2px;
 }
 
-.nav.active {
-  background: linear-gradient(135deg, rgba(79, 70, 229, .95), rgba(6, 182, 212, .80));
-  border-color: rgba(255, 255, 255, 0.18);
-  box-shadow: 0 18px 45px rgba(79, 70, 229, .25);
+.nav-loading-dot {
+  position: absolute;
+  right: 4px;
+  bottom: 4px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #5fc5ff;
 }
 
-.nav.active .navIconWrap {
-  background: rgba(255, 255, 255, 0.18);
-  border-color: rgba(255, 255, 255, 0.22);
-}
+/* ===============================
+   SIDEBAR FOOTER
+================================ */
 
 .sidebarFoot {
   margin-top: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.themeToggle {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  border-radius: 14px;
-  padding: 12px 12px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  background: rgba(255, 255, 255, 0.03);
-  color: var(--text);
-  cursor: pointer;
-  transition: background .18s ease, transform .18s ease, border-color .18s ease;
-}
-
-.themeToggle:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.12);
-  transform: translateY(-1px);
 }
 
 .sidebarHint {
   font-size: 12px;
-  color: var(--muted);
-  line-height: 1.4;
-  padding: 0 4px;
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.05);
 }
 
+/* ===============================
+   MAIN CONTENT
+================================ */
+
 .mainContent {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
 }
 
 .topbar {
-  height: 64px;
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  padding: 0 22px;
-  border-bottom: 1px solid var(--border);
-  background: rgba(0, 0, 0, 0.18);
-  backdrop-filter: blur(12px);
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  background: rgba(10,10,16,0.65);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
 }
 
 .topbarTitle {
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 700;
-  letter-spacing: 0.2px;
 }
 
 .topbarPill {
-  font-size: 12px;
-  padding: 6px 10px;
+  padding: 6px 12px;
   border-radius: 999px;
-  background: rgba(34, 197, 94, 0.16);
-  border: 1px solid rgba(34, 197, 94, 0.25);
-  color: rgba(255, 255, 255, 0.88);
+  font-size: 12px;
+  background: rgba(255,255,255,0.08);
 }
 
+/* ===============================
+   CONTENT AREA
+================================ */
+
 .content {
-  padding: 22px;
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
 }
+
+/* ===============================
+   MOBILE BOTTOM NAV
+================================ */
 
 .bottomNav {
   display: none;
 }
 
-/* Mobile */
-@media (max-width: 980px) {
-  .shell {
-    grid-template-columns: 1fr;
-  }
+.bottomItem {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  background: transparent;
+  color: rgba(255,255,255,0.7);
+}
+
+.bottomItem.active {
+  color: white;
+}
+
+/* ===============================
+   APP STATES
+================================ */
+
+.app-state {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.state-card {
+  padding: 30px;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.spinner {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.2);
+  border-top-color: white;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ===============================
+   RESPONSIVE
+================================ */
+
+@media (max-width: 950px) {
 
   .sidebar {
     display: none;
   }
 
-  .content {
-    padding: 16px;
-    padding-bottom: 92px;
-  }
-
   .bottomNav {
     display: flex;
-    position: fixed;
-    left: 12px;
-    right: 12px;
-    bottom: 12px;
-    gap: 10px;
-    padding: 10px;
-    border-radius: 18px;
-    background: rgba(10, 14, 28, 0.78);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    backdrop-filter: blur(16px);
-    box-shadow: var(--shadow);
+    border-top: 1px solid rgba(255,255,255,0.08);
+    background: rgba(10,10,16,0.8);
   }
 
-  .bottomItem {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-    padding: 10px 8px;
-    border-radius: 14px;
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    background: rgba(255, 255, 255, 0.03);
-    color: var(--text);
-    cursor: pointer;
-    transition: background .18s ease, transform .18s ease, border-color .18s ease;
-  }
-
-  .bottomIcon {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .bottomIcon .nav-loading-dot {
-    top: -2px;
-    right: -4px;
-    width: 8px;
-    height: 8px;
-  }
-
-  .bottomItem:hover {
-    transform: translateY(-1px);
-    background: rgba(255, 255, 255, 0.05);
-    border-color: rgba(255, 255, 255, 0.12);
-  }
-
-  .bottomItem.active {
-    background: linear-gradient(135deg, rgba(79, 70, 229, .95), rgba(6, 182, 212, .80));
-    border-color: rgba(255, 255, 255, 0.18);
-  }
-
-  .bottomLabel {
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.15px;
-  }
 }

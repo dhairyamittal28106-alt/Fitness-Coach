@@ -705,7 +705,8 @@ body {
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -830,4 +831,74 @@ body {
   background: transparent;
   border-color: var(--border);
   color: var(--text-muted);
+}
+.model-banner.pro {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:14px 18px;
+  border-radius:14px;
+  background: rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.12);
+  margin-bottom:14px;
+  -webkit-backdrop-filter: blur(10px);
+backdrop-filter: blur(10px);
+}
+
+.model-banner-left {
+  max-width:70%;
+}
+
+.model-title {
+  font-weight:700;
+  font-size:14px;
+  margin-bottom:4px;
+}
+
+.model-desc {
+  font-size:13px;
+  opacity:0.75;
+}
+
+.model-desc.error {
+  color:#ff6b6b;
+}
+
+.progress-container {
+  width:200px;
+}
+
+.progress-bar {
+  height:6px;
+  background:rgba(255,255,255,0.1);
+  border-radius:999px;
+  overflow:hidden;
+}
+
+.progress-fill {
+  height:100%;
+  background: linear-gradient(90deg,#5fc5ff,#a078ff);
+  transition: width 0.3s ease;
+}
+
+.loader-spinner {
+  width:18px;
+  height:18px;
+  border-radius:50%;
+  border:2px solid rgba(255,255,255,0.3);
+  border-top-color:white;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.btn.primary {
+  background: linear-gradient(90deg,#5fc5ff,#a078ff);
+  border:none;
+}
+
+.btn.danger {
+  background:#ff5a5a;
 }

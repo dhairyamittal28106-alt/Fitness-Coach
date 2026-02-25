@@ -1,0 +1,138 @@
+.st-wrap { padding: 18px; color: #f2f6ff; }
+
+.st-badge {
+  display: inline-flex; padding: 6px 10px; border-radius: 999px;
+  background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
+  font-size: 12px;
+}
+
+.st-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 14px; }
+.st-head h2 { margin: 8px 0 6px; font-size: 22px; }
+.st-muted { color: rgba(255,255,255,0.65); }
+.mini { font-size: 12px; }
+
+.card {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  padding: 14px;
+  -webkit-backdrop-filter: blur(10px);
+backdrop-filter: blur(10px);
+}
+
+.st-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.st-btn {
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(255,255,255,0.08);
+  color: #f2f6ff;
+  border-radius: 12px;
+  padding: 10px 12px;
+  cursor: pointer;
+  font-weight: 900;
+}
+.st-btn.ghost { background: rgba(255,255,255,0.05); }
+.st-btn.danger { border-color: rgba(255, 120, 120, 0.35); background: rgba(255,120,120,0.10); }
+.st-btn.danger.ghost { background: rgba(255,255,255,0.05); color: rgba(255, 210, 210, 0.95); }
+
+.st-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+.st-col { display: flex; flex-direction: column; gap: 12px; }
+
+.st-panel-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.st-panel-head h3 { margin: 0; font-size: 16px; }
+
+.st-pill {
+  padding: 6px 10px; border-radius: 999px; font-size: 12px;
+  background: rgba(255,255,255,0.09); border: 1px solid rgba(255,255,255,0.12);
+}
+.st-pill.subtle { background: rgba(255,255,255,0.06); }
+
+.st-item {
+  display: flex; justify-content: space-between; gap: 12px; align-items: center;
+  padding: 12px; border-radius: 14px; margin-top: 10px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.10);
+}
+.st-info { display: flex; flex-direction: column; gap: 4px; }
+.st-label { font-weight: 900; }
+.st-sub { font-size: 12px; color: rgba(255,255,255,0.65); max-width: 520px; }
+
+.st-toggle {
+  display: inline-flex; align-items: center; gap: 10px;
+  border-radius: 999px;
+  padding: 8px 12px;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(0,0,0,0.18);
+  color: #f2f6ff;
+  cursor: pointer;
+  font-weight: 900;
+  min-width: 92px;
+  justify-content: center;
+}
+.st-toggle .dot {
+  width: 10px; height: 10px; border-radius: 999px;
+  background: rgba(255,255,255,0.35);
+  border: 1px solid rgba(255,255,255,0.2);
+}
+.st-toggle.on {
+  background: rgba(95,197,255,0.14);
+  border-color: rgba(95,197,255,0.28);
+}
+.st-toggle.on .dot { background: rgba(95,197,255,0.95); border-color: rgba(95,197,255,0.28); }
+.st-toggle:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.st-callout {
+  margin-top: 10px;
+  padding: 12px;
+  border-radius: 14px;
+  background: rgba(95,197,255,0.10);
+  border: 1px solid rgba(95,197,255,0.22);
+  color: rgba(220,240,255,0.95);
+  font-size: 12px;
+}
+
+.st-kv {
+  display: flex; justify-content: space-between; gap: 10px; margin-top: 10px;
+  padding: 10px; border-radius: 14px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.10);
+}
+.st-kv .k { font-size: 12px; opacity: 0.85; }
+.st-kv .v { font-weight: 900; text-align: right; }
+
+.st-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+.st-modal {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+  display: flex; align-items: center; justify-content: center; padding: 18px; z-index: 9999;
+}
+.st-confirm { width: min(560px, 100%); }
+.st-confirm-title { font-weight: 900; font-size: 18px; }
+
+.st-toasts {
+  position: fixed;
+  top: 14px;
+  right: 14px;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.st-toast {
+  width: 320px;
+  padding: 12px;
+  border-radius: 14px;
+  background: rgba(0,0,0,0.55);
+  border: 1px solid rgba(255,255,255,0.14);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.35);
+}
+.st-toast.success { border-color: rgba(140,255,190,0.25); }
+.st-toast.error { border-color: rgba(255,120,120,0.30); }
+.st-toast.info { border-color: rgba(95,197,255,0.28); }
+.st-toast-title { font-weight: 900; }
+.st-toast-msg { margin-top: 4px; font-size: 12px; color: rgba(255,255,255,0.72); }
+
+@media (max-width: 1100px) {
+  .st-grid { grid-template-columns: 1fr; }
+  .st-toast { width: min(340px, calc(100vw - 28px)); }
+}
