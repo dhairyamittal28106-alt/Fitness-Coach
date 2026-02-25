@@ -1,10 +1,10 @@
-import { useState, useRef, useCallback, useEffect } from 'react';
-import { VoicePipeline, ModelCategory, ModelManager } from '@runanywhere/web';
-import { AudioCapture, AudioPlayback, VAD, SpeechActivity } from '@runanywhere/web-onnx';
-import { useGlobalModelLoader } from '../hooks/useGlobalModelLoader';
-import { ModelBanner } from './ModelBanner';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { VoicePipeline, ModelCategory } from "@runanywhere/web";
+import { AudioCapture, AudioPlayback, VAD, SpeechActivity } from "@runanywhere/web-onnx";
+import { useGlobalModelLoader } from "../hooks/useGlobalModelLoader";
+import { ModelBanner } from "./ModelBanner";
 
-type VoiceState = 'idle' | 'loading-models' | 'listening' | 'processing' | 'speaking';
+type VoiceState = "idle" | "loading-models" | "listening" | "processing" | "speaking";
 
 export function VoiceTab() {
   const llmLoader = useGlobalModelLoader(ModelCategory.Language);
@@ -12,32 +12,25 @@ export function VoiceTab() {
   const ttsLoader = useGlobalModelLoader(ModelCategory.SpeechSynthesis);
   const vadLoader = useGlobalModelLoader(ModelCategory.Audio);
 
-  const [voiceState, setVoiceState] = useState<VoiceState>('idle');
-  const [transcript, setTranscript] = useState('');
-  const [response, setResponse] = useState('');
+  const [voiceState, setVoiceState] = useState<VoiceState>("idle");
+  const [transcript, setTranscript] = useState("");
+  const [response, setResponse] = useState("");
   const [audioLevel, setAudioLevel] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
   const micRef = useRef<AudioCapture | null>(null);
   const pipelineRef = useRef<VoicePipeline | null>(null);
-  const vadUnsub = useRef<(() => void) | null>(null);
+  const vadUnsubRef = useRef<null | (() => void)>(null);
+  const processingRef = useRef(false);
 
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      micRef.current?.stop();
-      vadUnsub.current?.();
-    };
-  }, []);
+  const allReady =
+    vadLoader.state === "ready" &&
+    sttLoader.state === "ready" &&
+    llmLoader.state === "ready" &&
+    ttsLoader.state === "ready";
 
-  // Pre-load models on mount
-  useEffect(() => {
-    ensureModels();
-  }, []);
-
-  // Ensure all 4 models are loaded
   const ensureModels = useCallback(async (): Promise<boolean> => {
-    setVoiceState('loading-models');
+    setVoiceState("loading-models");
     setError(null);
 
     const results = await Promise.all([
@@ -47,178 +40,221 @@ export function VoiceTab() {
       ttsLoader.ensure(),
     ]);
 
-    if (results.every(Boolean)) {
-      setVoiceState('idle');
-      return true;
-    }
-
-    setError('Failed to load one or more voice models');
-    setVoiceState('idle');
-    return false;
+    const ok = results.every(Boolean);
+    setVoiceState("idle");
+    if (!ok) setError("Voice models could not be loaded. Please retry.");
+    return ok;
   }, [vadLoader, sttLoader, llmLoader, ttsLoader]);
 
-  // Start listening
-  const startListening = useCallback(async () => {
-    setTranscript('');
-    setResponse('');
-    setError(null);
-
-    // Load models if needed
-    const anyMissing = !ModelManager.getLoadedModel(ModelCategory.Audio)
-      || !ModelManager.getLoadedModel(ModelCategory.SpeechRecognition)
-      || !ModelManager.getLoadedModel(ModelCategory.Language)
-      || !ModelManager.getLoadedModel(ModelCategory.SpeechSynthesis);
-
-    if (anyMissing) {
-      const ok = await ensureModels();
-      if (!ok) return;
-    }
-
-    setVoiceState('listening');
-
-    const mic = new AudioCapture({ sampleRate: 16000 });
-    micRef.current = mic;
-
-    if (!pipelineRef.current) {
-      pipelineRef.current = new VoicePipeline();
-    }
-
-    // Start VAD + mic
-    VAD.reset();
-
-    vadUnsub.current = VAD.onSpeechActivity((activity) => {
-      if (activity === SpeechActivity.Ended) {
-        const segment = VAD.popSpeechSegment();
-        if (segment && segment.samples.length > 1600) {
-          processSpeech(segment.samples);
-        }
-      }
-    });
-
-    await mic.start(
-      (chunk) => { VAD.processSamples(chunk); },
-      (level) => { setAudioLevel(level); },
-    );
+  // Preload models once
+  useEffect(() => {
+    ensureModels();
   }, [ensureModels]);
 
-  // Process a speech segment through the full pipeline
-  const processSpeech = useCallback(async (audioData: Float32Array) => {
-    const pipeline = pipelineRef.current;
-    if (!pipeline) return;
-
-    // Stop mic during processing
-    micRef.current?.stop();
-    vadUnsub.current?.();
-    setVoiceState('processing');
-
-    try {
-      const result = await pipeline.processTurn(audioData, {
-        maxTokens: 60,
-        temperature: 0.7,
-        systemPrompt: 'You are a helpful voice assistant. Keep responses concise — 1-2 sentences max.',
-      }, {
-        onTranscription: (text) => {
-          setTranscript(text);
-        },
-        onResponseToken: (_token, accumulated) => {
-          setResponse(accumulated);
-        },
-        onResponseComplete: (text) => {
-          setResponse(text);
-        },
-        onSynthesisComplete: async (audio, sampleRate) => {
-          setVoiceState('speaking');
-          const player = new AudioPlayback({ sampleRate });
-          await player.play(audio, sampleRate);
-          player.dispose();
-        },
-        onStateChange: (s) => {
-          if (s === 'processingSTT') setVoiceState('processing');
-          if (s === 'generatingResponse') setVoiceState('processing');
-          if (s === 'playingTTS') setVoiceState('speaking');
-        },
-      });
-
-      if (result) {
-        setTranscript(result.transcription);
-        setResponse(result.response);
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
-    }
-
-    setVoiceState('idle');
-    setAudioLevel(0);
+  const cleanupVAD = useCallback(() => {
+    vadUnsubRef.current?.();
+    vadUnsubRef.current = null;
   }, []);
 
   const stopListening = useCallback(() => {
     micRef.current?.stop();
-    vadUnsub.current?.();
-    setVoiceState('idle');
+    micRef.current = null;
+    cleanupVAD();
     setAudioLevel(0);
-  }, []);
+    setVoiceState("idle");
+    processingRef.current = false;
+  }, [cleanupVAD]);
 
-  // Which loaders are still loading?
-  const pendingLoaders = [
-    { label: 'VAD', loader: vadLoader },
-    { label: 'STT', loader: sttLoader },
-    { label: 'LLM', loader: llmLoader },
-    { label: 'TTS', loader: ttsLoader },
-  ].filter((l) => l.loader.state !== 'ready');
+  useEffect(() => {
+    return () => {
+      stopListening();
+    };
+  }, [stopListening]);
+
+  const processSpeech = useCallback(
+    async (audioData: Float32Array) => {
+      if (processingRef.current) return;
+      processingRef.current = true;
+
+      const pipeline = pipelineRef.current;
+      if (!pipeline) return;
+
+      // pause listening during processing
+      micRef.current?.stop();
+      cleanupVAD();
+      setVoiceState("processing");
+
+      try {
+        const result = await pipeline.processTurn(
+          audioData,
+          {
+            maxTokens: 80,
+            temperature: 0.7,
+            systemPrompt:
+              "You are a helpful voice assistant for fitness and health. Keep replies concise and actionable (1–2 sentences).",
+          },
+          {
+            onTranscription: (text) => setTranscript(text),
+            onResponseToken: (_tok, accumulated) => setResponse(accumulated),
+            onResponseComplete: (text) => setResponse(text),
+            onSynthesisComplete: async (audio, sampleRate) => {
+              setVoiceState("speaking");
+              const player = new AudioPlayback({ sampleRate });
+
+              try {
+                await player.play(audio, sampleRate);
+              } finally {
+                player.dispose();
+              }
+            },
+            onStateChange: (s) => {
+              if (s === "processingSTT") setVoiceState("processing");
+              if (s === "generatingResponse") setVoiceState("processing");
+              if (s === "playingTTS") setVoiceState("speaking");
+            },
+          }
+        );
+
+        if (result) {
+          setTranscript(result.transcription || "");
+          setResponse(result.response || "");
+        }
+      } catch (e) {
+        setError(e instanceof Error ? e.message : String(e));
+      } finally {
+        setVoiceState("idle");
+        setAudioLevel(0);
+        processingRef.current = false;
+
+        // Auto-resume listening for a continuous assistant feel
+        // If you don’t want auto-resume, remove next line.
+        setTimeout(() => {
+          startListening();
+        }, 250);
+      }
+    },
+    [cleanupVAD]
+  );
+
+  const startListening = useCallback(async () => {
+    setTranscript("");
+    setResponse("");
+    setError(null);
+
+    if (!allReady) {
+      const ok = await ensureModels();
+      if (!ok) return;
+    }
+
+    if (!pipelineRef.current) pipelineRef.current = new VoicePipeline();
+
+    setVoiceState("listening");
+    processingRef.current = false;
+
+    try {
+      const mic = new AudioCapture({ sampleRate: 16000 });
+      micRef.current = mic;
+
+      VAD.reset();
+
+      cleanupVAD();
+      vadUnsubRef.current = VAD.onSpeechActivity((activity) => {
+        if (processingRef.current) return;
+
+        if (activity === SpeechActivity.Ended) {
+          const segment = VAD.popSpeechSegment();
+
+          // ignore tiny segments (breath/noise)
+          if (segment?.samples && segment.samples.length > 3200) {
+            processSpeech(segment.samples);
+          }
+        }
+      });
+
+      await mic.start(
+        (chunk) => VAD.processSamples(chunk),
+        (level) => setAudioLevel(level)
+      );
+    } catch (e) {
+      setVoiceState("idle");
+      setAudioLevel(0);
+      setError(
+        "Microphone permission denied or unavailable. Allow mic access in the browser and reload."
+      );
+      stopListening();
+    }
+  }, [allReady, ensureModels, cleanupVAD, processSpeech, stopListening]);
+
+  const pendingLoaders = useMemo(
+    () =>
+      [
+        { label: "VAD", loader: vadLoader },
+        { label: "STT", loader: sttLoader },
+        { label: "LLM", loader: llmLoader },
+        { label: "TTS", loader: ttsLoader },
+      ].filter((l) => l.loader.state !== "ready"),
+    [vadLoader, sttLoader, llmLoader, ttsLoader]
+  );
 
   return (
     <div className="tab-panel voice-panel">
-      {pendingLoaders.length > 0 && voiceState === 'idle' && (
+      {pendingLoaders.length > 0 && (
         <ModelBanner
           state={pendingLoaders[0].loader.state}
           progress={pendingLoaders[0].loader.progress}
           error={pendingLoaders[0].loader.error}
           onLoad={ensureModels}
-          label={`Voice (${pendingLoaders.map((l) => l.label).join(', ')})`}
-          category={pendingLoaders[0].loader.category}
+          label={`Voice (${pendingLoaders.map((l) => l.label).join(", ")})`}
+          category={ModelCategory.Audio}
         />
       )}
 
-      {error && <div className="model-banner"><span className="error-text">{error}</span></div>}
+      {error && (
+        <div className="model-banner">
+          <span className="error-text">{error}</span>
+        </div>
+      )}
 
       <div className="voice-center">
-        <div className="voice-orb" data-state={voiceState} style={{ '--level': audioLevel } as React.CSSProperties}>
+        <div
+          className="voice-orb"
+          data-state={voiceState}
+          style={{ ["--level" as any]: audioLevel } as React.CSSProperties}
+        >
           <div className="voice-orb-inner" />
         </div>
 
         <p className="voice-status">
-          {voiceState === 'idle' && 'Tap to start listening'}
-          {voiceState === 'loading-models' && 'Loading models...'}
-          {voiceState === 'listening' && 'Listening... speak now'}
-          {voiceState === 'processing' && 'Processing...'}
-          {voiceState === 'speaking' && 'Speaking...'}
+          {voiceState === "idle" && "Ready. Tap to start listening."}
+          {voiceState === "loading-models" && "Loading voice components..."}
+          {voiceState === "listening" && "Listening..."}
+          {voiceState === "processing" && "Processing..."}
+          {voiceState === "speaking" && "Speaking..."}
         </p>
 
-        {voiceState === 'idle' || voiceState === 'loading-models' ? (
-          <button
-            className="btn btn-primary btn-lg"
-            onClick={startListening}
-            disabled={voiceState === 'loading-models'}
-          >
-            Start Listening
+        {(voiceState === "idle" || voiceState === "loading-models") && (
+          <button className="btn btn-primary btn-lg" onClick={startListening} disabled={voiceState === "loading-models"}>
+            Start
           </button>
-        ) : voiceState === 'listening' ? (
+        )}
+
+        {voiceState === "listening" && (
           <button className="btn btn-lg" onClick={stopListening}>
             Stop
           </button>
-        ) : null}
+        )}
       </div>
 
       {transcript && (
         <div className="voice-transcript">
-          <h4>You said:</h4>
+          <h4>Transcript</h4>
           <p>{transcript}</p>
         </div>
       )}
 
       {response && (
         <div className="voice-response">
-          <h4>AI response:</h4>
+          <h4>Response</h4>
           <p>{response}</p>
         </div>
       )}

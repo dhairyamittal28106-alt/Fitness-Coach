@@ -1,0 +1,77 @@
+.posture-pro { padding: 18px; color: #f2f6ff; }
+.pp-head { display: flex; justify-content: space-between; gap: 14px; align-items: flex-end; }
+.pp-badge { display: inline-flex; padding: 6px 10px; border-radius: 999px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); font-size: 12px; }
+.pp-head h2 { margin: 8px 0 6px; font-size: 22px; }
+.pp-muted { color: rgba(255,255,255,0.65); }
+.mini { font-size: 12px; }
+
+.pp-controls { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; }
+.pp-field { display: flex; flex-direction: column; gap: 6px; }
+.pp-field span { font-size: 12px; opacity: 0.85; }
+.pp-field select {
+  border-radius: 12px; padding: 10px 12px; outline: none;
+  background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.12);
+  color: #f2f6ff; min-width: 220px;
+}
+.pp-btn {
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(255,255,255,0.08);
+  color: #f2f6ff;
+  border-radius: 12px;
+  padding: 10px 12px;
+  cursor: pointer;
+  font-weight: 800;
+}
+.pp-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+.pp-primary { background: linear-gradient(90deg, rgba(95,197,255,0.95), rgba(160,120,255,0.95)); border-color: rgba(255,255,255,0.18); }
+.pp-ghost { background: rgba(255,255,255,0.05); }
+
+.pp-error { margin-top: 10px; padding: 12px; border-radius: 14px; background: rgba(255,80,80,0.12); border: 1px solid rgba(255,80,80,0.22); }
+
+.pp-grid { display: grid; grid-template-columns: 1.6fr 1fr; gap: 12px; margin-top: 12px; }
+.card {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  padding: 14px;
+  -webkit-backdrop-filter: blur(10px);
+backdrop-filter: blur(10px);
+}
+
+.pp-cam-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 10px; }
+.pp-live {
+  padding: 6px 10px; border-radius: 999px; font-size: 12px; font-weight: 900;
+  border: 1px solid rgba(255,255,255,0.14); background: rgba(255,255,255,0.08);
+}
+.pp-live.ok { background: rgba(120,255,180,0.12); border-color: rgba(120,255,180,0.25); }
+.pp-live.warn { background: rgba(255,210,120,0.12); border-color: rgba(255,210,120,0.25); }
+.pp-live.bad { background: rgba(255,120,120,0.12); border-color: rgba(255,120,120,0.25); }
+.pp-live.none { opacity: 0.75; }
+
+.pp-stage { position: relative; width: 100%; border-radius: 16px; overflow: hidden; border: 1px solid rgba(255,255,255,0.12); background: rgba(0,0,0,0.25); }
+.pp-video { width: 100%; height: auto; display: block; transform: scaleX(-1); }
+.pp-canvas { position: absolute; inset: 0; width: 100%; height: 100%; transform: scaleX(-1); }
+
+.pp-side { display: flex; flex-direction: column; gap: 12px; }
+.pp-side-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.pp-side-head h3 { margin: 0; font-size: 16px; }
+.pp-pill { padding: 6px 10px; border-radius: 999px; font-size: 12px; border: 1px solid rgba(255,255,255,0.14); background: rgba(255,255,255,0.08); }
+.pp-pill.ok { background: rgba(120,255,180,0.12); border-color: rgba(120,255,180,0.25); }
+.pp-pill.warn { background: rgba(255,210,120,0.12); border-color: rgba(255,210,120,0.25); }
+.pp-pill.bad { background: rgba(255,120,120,0.12); border-color: rgba(255,120,120,0.25); }
+.pp-pill.none { opacity: 0.75; }
+
+.pp-tips { margin-top: 10px; display: flex; flex-direction: column; gap: 10px; }
+.pp-tip { display: flex; gap: 10px; align-items: flex-start; padding: 10px; border-radius: 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.10); }
+.pp-tip .dot { width: 10px; height: 10px; margin-top: 4px; border-radius: 999px; background: rgba(95,197,255,0.95); flex: 0 0 auto; }
+
+.pp-metrics { margin-top: 10px; display: grid; grid-template-columns: 1fr; gap: 10px; }
+.pp-metric { display: flex; justify-content: space-between; gap: 10px; padding: 10px; border-radius: 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.10); }
+.pp-metric .k { font-size: 12px; opacity: 0.85; }
+.pp-metric .v { font-weight: 900; }
+
+@media (max-width: 1100px) {
+  .pp-grid { grid-template-columns: 1fr; }
+  .pp-field select { min-width: 180px; }
+}
