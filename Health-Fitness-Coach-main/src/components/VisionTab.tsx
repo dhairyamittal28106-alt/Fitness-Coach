@@ -7,7 +7,7 @@ import { ModelBanner } from './ModelBanner';
 const LIVE_INTERVAL_MS = 2500;
 const LIVE_MAX_TOKENS = 30;
 const SINGLE_MAX_TOKENS = 80;
-const CAPTURE_DIM = 256; // CLIP resizes internally; larger is wasted work
+const CAPTURE_DIM = 256; 
 
 interface VisionResult {
   text: string;
@@ -29,13 +29,13 @@ export function VisionTab() {
   const liveIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const liveModeRef = useRef(false);
 
-  // Keep refs in sync with state so interval callbacks see latest values
+  
   processingRef.current = processing;
   liveModeRef.current = liveMode;
 
-  // ------------------------------------------------------------------
-  // Camera
-  // ------------------------------------------------------------------
+  
+  
+  
   const startCamera = useCallback(async () => {
     if (captureRef.current?.isCapturing) return;
 
@@ -72,7 +72,7 @@ export function VisionTab() {
     }
   }, []);
 
-  // Cleanup on unmount
+  
   useEffect(() => {
     return () => {
       if (liveIntervalRef.current) clearInterval(liveIntervalRef.current);
@@ -85,16 +85,16 @@ export function VisionTab() {
     };
   }, []);
 
-  // ------------------------------------------------------------------
-  // Core: capture + infer
-  // ------------------------------------------------------------------
+  
+  
+  
   const describeFrame = useCallback(async (maxTokens: number) => {
     if (processingRef.current) return;
 
     const cam = captureRef.current;
     if (!cam?.isCapturing) return;
 
-    // Ensure model loaded
+    
     if (loader.state !== 'ready') {
       const ok = await loader.ensure();
       if (!ok) return;
@@ -141,9 +141,9 @@ export function VisionTab() {
     }
   }, [loader, prompt]);
 
-  // ------------------------------------------------------------------
-  // Single-shot
-  // ------------------------------------------------------------------
+  
+  
+  
   const describeSingle = useCallback(async () => {
     if (!captureRef.current?.isCapturing) {
       await startCamera();
@@ -152,9 +152,9 @@ export function VisionTab() {
     await describeFrame(SINGLE_MAX_TOKENS);
   }, [startCamera, describeFrame]);
 
-  // ------------------------------------------------------------------
-  // Live mode
-  // ------------------------------------------------------------------
+  
+  
+  
   const startLive = useCallback(async () => {
     if (!captureRef.current?.isCapturing) {
       await startCamera();
@@ -163,10 +163,10 @@ export function VisionTab() {
     setLiveMode(true);
     liveModeRef.current = true;
 
-    // Immediately describe first frame
+    
     describeFrame(LIVE_MAX_TOKENS);
 
-    // Then poll every 2.5s — skips ticks while inference is running
+    
     liveIntervalRef.current = setInterval(() => {
       if (!processingRef.current && liveModeRef.current) {
         describeFrame(LIVE_MAX_TOKENS);
@@ -191,9 +191,9 @@ export function VisionTab() {
     }
   }, [liveMode, startLive, stopLive]);
 
-  // ------------------------------------------------------------------
-  // Render
-  // ------------------------------------------------------------------
+  
+  
+  
   return (
     <div className="tab-panel vision-panel">
       <ModelBanner

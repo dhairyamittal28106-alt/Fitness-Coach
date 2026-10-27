@@ -14,7 +14,7 @@ import { useGlobalModelLoader } from "./hooks/useGlobalModelLoader";
 
 type Tab = "nutrition" | "posture" | "coach" | "voice" | "workouts" | "plan" | "settings";
 
-/* ----------------------------- Icons (no libs) ---------------------------- */
+ 
 
 function IconChat() {
   return (
@@ -87,7 +87,7 @@ function IconSettings() {
   );
 }
 
-/* -------------------------- Background loading dot ------------------------- */
+ 
 
 function NavLoadingDot({ category }: { category: ModelCategory }) {
   const { state } = useGlobalModelLoader(category);
@@ -95,7 +95,7 @@ function NavLoadingDot({ category }: { category: ModelCategory }) {
   return <span className="nav-loading-dot" aria-hidden="true" />;
 }
 
-/* --------------------------------- Shell --------------------------------- */
+ 
 
 function AppShell() {
   const [sdkReady, setSdkReady] = useState(false);
@@ -103,7 +103,7 @@ function AppShell() {
   const [activeTab, setActiveTab] = useState<Tab>("coach");
   const [showDownloadModal, setShowDownloadModal] = useState(false);
 
-  // loaders for background indicators
+  
   const langLoader = useGlobalModelLoader(ModelCategory.Language);
   const multiLoader = useGlobalModelLoader(ModelCategory.Multimodal);
   const sttLoader = useGlobalModelLoader(ModelCategory.SpeechRecognition);

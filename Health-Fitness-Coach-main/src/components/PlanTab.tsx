@@ -199,16 +199,16 @@ export function PlanTab() {
 
   const [view, setView] = useState<"overview" | "subscriptions" | "coaches" | "builder">("overview");
 
-  // subscription selection
+  
   const [cycle, setCycle] = useState<BillingCycle>("Monthly");
   const [selectedTier, setSelectedTier] = useState<PlanTier>("Pro");
 
-  // coach search/filter
+  
   const [coachQuery, setCoachQuery] = useState("");
   const [coachSpecialty, setCoachSpecialty] = useState<Coach["specialty"] | "All">("All");
   const [selectedCoachId, setSelectedCoachId] = useState<string | null>(null);
 
-  // checkout modal
+  
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [checkoutMode, setCheckoutMode] = useState<"subscription" | "coach">("subscription");
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("UPI");
@@ -216,7 +216,7 @@ export function PlanTab() {
   const [buyerEmail, setBuyerEmail] = useState("");
   const [buyerPhone, setBuyerPhone] = useState("");
 
-  // plan builder
+  
   const [planDraft, setPlanDraft] = useState<PlanDay[]>(() => persisted.weeklyPlan);
 
   useEffect(() => {
@@ -276,7 +276,7 @@ export function PlanTab() {
   }
 
   function activateSubscription() {
-    // UI-only mock activation
+    
     const now = Date.now();
     const renewMs =
       cycle === "Weekly" ? 7 * 24 * 3600 * 1000 : cycle === "Monthly" ? 30 * 24 * 3600 * 1000 : 365 * 24 * 3600 * 1000;
@@ -303,7 +303,7 @@ export function PlanTab() {
 
   function bookCoach() {
     if (!selectedCoachId) return;
-    // UI-only mock booking; should be gated behind Elite tier in production
+    
     setPersisted((p) => ({
       ...p,
       bookedCoachId: selectedCoachId,
@@ -383,7 +383,7 @@ export function PlanTab() {
         </div>
       </div>
 
-      {/* Overview */}
+       
       {view === "overview" && (
         <div className="pl-grid">
           <div className="card">
@@ -531,7 +531,7 @@ export function PlanTab() {
         </div>
       )}
 
-      {/* Subscriptions */}
+       
       {view === "subscriptions" && (
         <div className="card" style={{ marginTop: 12 }}>
           <div className="pl-panel-head">
@@ -588,7 +588,7 @@ export function PlanTab() {
         </div>
       )}
 
-      {/* Coaches */}
+       
       {view === "coaches" && (
         <div className="pl-coaches">
           <div className="card" style={{ marginTop: 12 }}>
@@ -673,7 +673,7 @@ export function PlanTab() {
             </div>
           </div>
 
-          {/* Coach profile drawer */}
+           
           {selectedCoach && (
             <div className="pl-modal" role="dialog" aria-modal="true">
               <div className="pl-drawer card">
@@ -725,7 +725,7 @@ export function PlanTab() {
         </div>
       )}
 
-      {/* Plan builder */}
+       
       {view === "builder" && (
         <div className="card" style={{ marginTop: 12 }}>
           <div className="pl-panel-head">
@@ -764,7 +764,7 @@ export function PlanTab() {
         </div>
       )}
 
-      {/* Checkout modal */}
+       
       {checkoutOpen && (
         <div className="pl-modal" role="dialog" aria-modal="true">
           <div className="pl-checkout card">

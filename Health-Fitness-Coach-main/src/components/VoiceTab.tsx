@@ -46,7 +46,7 @@ export function VoiceTab() {
     return ok;
   }, [vadLoader, sttLoader, llmLoader, ttsLoader]);
 
-  // Preload models once
+  
   useEffect(() => {
     ensureModels();
   }, [ensureModels]);
@@ -79,7 +79,7 @@ export function VoiceTab() {
       const pipeline = pipelineRef.current;
       if (!pipeline) return;
 
-      // pause listening during processing
+      
       micRef.current?.stop();
       cleanupVAD();
       setVoiceState("processing");
@@ -126,8 +126,8 @@ export function VoiceTab() {
         setAudioLevel(0);
         processingRef.current = false;
 
-        // Auto-resume listening for a continuous assistant feel
-        // If you don’t want auto-resume, remove next line.
+        
+        
         setTimeout(() => {
           startListening();
         }, 250);
@@ -164,7 +164,7 @@ export function VoiceTab() {
         if (activity === SpeechActivity.Ended) {
           const segment = VAD.popSpeechSegment();
 
-          // ignore tiny segments (breath/noise)
+          
           if (segment?.samples && segment.samples.length > 3200) {
             processSpeech(segment.samples);
           }

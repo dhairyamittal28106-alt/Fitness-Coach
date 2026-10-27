@@ -1,7 +1,7 @@
-/**
- * GeminiService.ts
- * Reliable service for Gemini 1.5 Flash API calls (Text and Vision).
- */
+
+
+
+
 
 const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
 
@@ -12,9 +12,9 @@ export class GeminiService {
         return !!this.apiKey && navigator.onLine;
     }
 
-    /**
-     * Chat completion with streaming support
-     */
+    
+
+
     static async *chatStream(prompt: string, systemPrompt?: string): AsyncGenerator<string> {
         const contents = [];
         if (systemPrompt) {
@@ -68,9 +68,9 @@ export class GeminiService {
         }
     }
 
-    /**
-     * Non-streaming chat for simple needs (though we'll favor streaming)
-     */
+    
+
+
     static async chat(prompt: string, systemPrompt?: string): Promise<string> {
         let full = "";
         for await (const chunk of this.chatStream(prompt, systemPrompt)) {
@@ -79,17 +79,17 @@ export class GeminiService {
         return full;
     }
 
-    /**
-     * Vision analysis (Image + Text)
-     */
+    
+
+
     static async vision(
         prompt: string,
         imageBuffer: Uint8Array,
         width: number,
         height: number
     ): Promise<string> {
-        // Convert RGB buffer to Base64 (Gemini expects JPEG/PNG or data URI)
-        // For simplicity, we'll convert the RGB buffer to a Canvas and then a Data URL
+        
+        
         const canvas = document.createElement("canvas");
         canvas.width = width;
         canvas.height = height;

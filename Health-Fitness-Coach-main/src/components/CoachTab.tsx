@@ -48,13 +48,13 @@ function saveChat(messages: Message[]) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
   } catch {
-    // ignore storage errors
+    
   }
 }
 
 function buildLocalPrompt(messages: Message[]) {
-  // Lightweight conversation formatting to keep model consistent.
-  // If you later migrate to a chat-template backend, replace this.
+  
+  
   const history = messages
     .slice(-12)
     .map((m) => (m.role === "user" ? `User: ${m.text}` : `Coach: ${m.text}`))
@@ -91,7 +91,7 @@ function sleep(ms: number) {
   return new Promise((r) => setTimeout(r, ms));
 }
 
-// Typewriter that updates the assistant bubble gradually
+
 async function typeInto(
   text: string,
   onChunk: (partial: string) => void,
@@ -101,7 +101,7 @@ async function typeInto(
   for (const ch of text) {
     out += ch;
     onChunk(out);
-    // small random jitter makes it feel natural
+    
     await sleep(speedMs + Math.floor(Math.random() * 10));
   }
 }
@@ -256,13 +256,13 @@ export function CoachTab() {
     return null;
   }, [messages]);
 
-  // preload model once
+  
   useEffect(() => {
     loader.ensure();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // persist + autoscroll
+  
   useEffect(() => {
     saveChat(messages);
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: "smooth" });
@@ -318,13 +318,13 @@ export function CoachTab() {
 
       setError(null);
 
-      // Ensure local model if needed
+      
       if (loader.state !== "ready") {
         const ok = await loader.ensure();
         if (!ok) return;
       }
 
-      // Create message IDs (avoid index bugs)
+      
       const userMsg: Message = { id: uid("u"), role: "user", text, createdAt: Date.now() };
       const assistantId = uid("a");
       const assistantMsg: Message = { id: assistantId, role: "assistant", text: "", createdAt: Date.now() };
@@ -332,13 +332,13 @@ export function CoachTab() {
       setInput("");
       setGenerating(true);
 
-      // push both messages atomically
+      
       setMessages((prev) => [...prev, userMsg, assistantMsg]);
 
       const isLocalOnly = localStorage.getItem("fitness-local-only-mode") === "true";
       const isCloudEnabled = localStorage.getItem("fitness-ai-cloud-mode") !== "false";
 
-      // --- Cloud path (stream) ---
+      
       if (!isLocalOnly && isCloudEnabled && GeminiService.isSupported) {
         try {
           const abort = { aborted: false };
@@ -355,16 +355,16 @@ export function CoachTab() {
           setGenerating(false);
           return;
         } catch (e) {
-          // fallback to local
+          
           console.warn("[CoachTab] Cloud failed; falling back to local:", e);
         }
       }
 
-      // --- Local path (stream) ---
+      
       try {
         const fastMode = localStorage.getItem("fitness-ai-fast-mode") === "true";
 
-        // Build prompt using last N messages including the newest user message
+        
         const snapshotForPrompt = [...messages, userMsg].filter(Boolean);
         const fullPrompt = buildLocalPrompt(snapshotForPrompt);
 
@@ -404,10 +404,10 @@ export function CoachTab() {
     if (generating) return;
     if (!lastUserMessage) return;
 
-    // Remove last assistant message (if exists) and regenerate for last user message
+    
     setMessages((prev) => {
       const next = [...prev];
-      // remove trailing assistant if last item is assistant
+      
       if (next.length && next[next.length - 1].role === "assistant") next.pop();
       return next;
     });

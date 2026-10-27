@@ -9,7 +9,7 @@ const STORAGE_KEYS = {
   cloudMode: "fitness-ai-cloud-mode",
   analytics: "fitness-analytics-enabled",
   localOnly: "fitness-local-only-mode",
-  theme: "fitness-theme-mode", // optional if you have it
+  theme: "fitness-theme-mode", 
 };
 
 function uid(prefix = "id") {
@@ -37,7 +37,7 @@ function estimateLocalStorageBytes() {
       const v = localStorage.getItem(k) ?? "";
       total += k.length + v.length;
     }
-    // UTF-16 ~2 bytes/char, rough estimate
+    
     return total * 2;
   } catch {
     return 0;
@@ -46,7 +46,7 @@ function estimateLocalStorageBytes() {
 
 export function SettingsTab() {
   const [fastMode, setFastMode] = useState(() => localStorage.getItem(STORAGE_KEYS.fastMode) === "true");
-  const [cloudMode, setCloudMode] = useState(() => localStorage.getItem(STORAGE_KEYS.cloudMode) !== "false"); // default true
+  const [cloudMode, setCloudMode] = useState(() => localStorage.getItem(STORAGE_KEYS.cloudMode) !== "false"); 
   const [analyticsEnabled, setAnalyticsEnabled] = useState(() => localStorage.getItem(STORAGE_KEYS.analytics) !== "false");
   const [localOnlyMode, setLocalOnlyMode] = useState(() => localStorage.getItem(STORAGE_KEYS.localOnly) === "true");
 
@@ -55,13 +55,13 @@ export function SettingsTab() {
 
   const [busy, setBusy] = useState<null | "clearModels" | "resetApp">(null);
 
-  // modal
+  
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmTitle, setConfirmTitle] = useState("");
   const [confirmBody, setConfirmBody] = useState("");
   const [confirmAction, setConfirmAction] = useState<null | (() => Promise<void> | void)>(null);
 
-  // toast
+  
   const [toasts, setToasts] = useState<Toast[]>([]);
 
   const addToast = (t: Omit<Toast, "id">) => {
@@ -78,7 +78,7 @@ export function SettingsTab() {
     return () => window.clearInterval(id);
   }, []);
 
-  // Derived policy: Local-only disables cloud processing
+  
   useEffect(() => {
     if (localOnlyMode && cloudMode) {
       setCloudMode(false);
@@ -167,15 +167,15 @@ export function SettingsTab() {
   const resetAppSettings = async () => {
     setBusy("resetApp");
     try {
-      // only remove app keys, not everything
+      
       Object.values(STORAGE_KEYS).forEach((k) => localStorage.removeItem(k));
 
-      // Optional: also clear app-specific plan/workouts keys if you use them
-      // localStorage.removeItem("fitnesscoach:workouts:v3");
-      // localStorage.removeItem("fitnesscoach:plan:v2");
+      
+      
+      
 
       addToast({ type: "success", title: "Reset complete", message: "Settings restored to defaults." });
-      // reload after short delay
+      
       window.setTimeout(() => window.location.reload(), 600);
     } catch (e) {
       addToast({ type: "error", title: "Reset failed", message: e instanceof Error ? e.message : String(e) });
@@ -185,7 +185,7 @@ export function SettingsTab() {
 
   return (
     <div className="st-wrap">
-      {/* Toasts */}
+       
       <div className="st-toasts" aria-live="polite">
         {toasts.map((t) => (
           <div key={t.id} className={`st-toast ${t.type}`}>
@@ -212,7 +212,7 @@ export function SettingsTab() {
       </div>
 
       <div className="st-grid">
-        {/* Left column */}
+         
         <div className="st-col">
           <div className="card">
             <div className="st-panel-head">
@@ -291,7 +291,7 @@ export function SettingsTab() {
           </div>
         </div>
 
-        {/* Right column */}
+         
         <div className="st-col">
           <div className="card">
             <div className="st-panel-head">
@@ -383,7 +383,7 @@ export function SettingsTab() {
         </div>
       </div>
 
-      {/* Confirm modal */}
+       
       {confirmOpen && (
         <div className="st-modal" role="dialog" aria-modal="true">
           <div className="st-confirm card">

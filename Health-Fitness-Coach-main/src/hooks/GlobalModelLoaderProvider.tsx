@@ -14,7 +14,7 @@ function getInitialState(category: ModelCategory): ModelLoaderState {
 export function GlobalModelLoaderProvider({ children }: { children: ReactNode }) {
     const [loaders, setLoaders] = useState<Map<ModelCategory, ModelLoaderState>>(() => {
         const map = new Map<ModelCategory, ModelLoaderState>();
-        // Initialize all known categories
+        
         map.set(ModelCategory.Language, getInitialState(ModelCategory.Language));
         map.set(ModelCategory.Multimodal, getInitialState(ModelCategory.Multimodal));
         map.set(ModelCategory.SpeechRecognition, getInitialState(ModelCategory.SpeechRecognition));
@@ -23,10 +23,10 @@ export function GlobalModelLoaderProvider({ children }: { children: ReactNode })
         return map;
     });
 
-    // Track which categories are currently loading to prevent double-loading
+    
     const loadingRef = useRef<Set<ModelCategory>>(new Set());
 
-    // Update state helper
+    
     const updateLoader = useCallback((category: ModelCategory, patch: Partial<ModelLoaderState>) => {
         setLoaders((prev) => {
             const next = new Map(prev);
@@ -36,7 +36,7 @@ export function GlobalModelLoaderProvider({ children }: { children: ReactNode })
         });
     }, []);
 
-    // Listen to ModelManager changes globally so all tabs stay in sync
+    
     useEffect(() => {
         const unsub = ModelManager.onChange(() => {
             setLoaders((prev) => {
@@ -57,15 +57,15 @@ export function GlobalModelLoaderProvider({ children }: { children: ReactNode })
     }, []);
 
     const ensure = useCallback(async (category: ModelCategory, coexist = false): Promise<boolean> => {
-        // Already loaded
+        
         if (ModelManager.getLoadedModel(category)) {
             updateLoader(category, { state: 'ready' });
             return true;
         }
 
-        // Already in progress — wait for it (don't double-load)
+        
         if (loadingRef.current.has(category)) {
-            // Poll until done or error
+            
             return new Promise((resolve) => {
                 const interval = setInterval(() => {
                     const loaded = ModelManager.getLoadedModel(category);
@@ -96,7 +96,7 @@ export function GlobalModelLoaderProvider({ children }: { children: ReactNode })
 
             const model = models[0];
 
-            // Download if needed
+            
             if (model.status !== 'downloaded' && model.status !== 'loaded') {
                 updateLoader(category, { state: 'downloading', progress: 0 });
 
@@ -111,7 +111,7 @@ export function GlobalModelLoaderProvider({ children }: { children: ReactNode })
                 updateLoader(category, { progress: 1 });
             }
 
-            // Load into memory
+            
             updateLoader(category, { state: 'loading' });
             const ok = await ModelManager.loadModel(model.id, { coexist });
 

@@ -1,13 +1,13 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 
-/**
- * WorkoutsTab (Pro)
- * - Workout library + filters + search
- * - Workout detail drawer
- * - Start session mode (timer, sets, rest, step tracking)
- * - Weekly plan generator + saved plan
- * - LocalStorage persistence + history
- */
+
+
+
+
+
+
+
+
 
 type Difficulty = "Beginner" | "Intermediate" | "Advanced";
 type Category = "Strength" | "Cardio" | "Mobility" | "Core" | "HIIT";
@@ -17,10 +17,10 @@ type WorkoutStep = {
   id: string;
   title: string;
   type: "work" | "rest";
-  durationSec?: number; // for HIIT / timed steps
-  sets?: number; // for strength
-  reps?: string; // e.g., "8-12"
-  restSec?: number; // rest after a set
+  durationSec?: number; 
+  sets?: number; 
+  reps?: string; 
+  restSec?: number; 
   notes?: string;
 };
 
@@ -42,8 +42,8 @@ type SessionState = {
   startedAt: number;
   paused: boolean;
   currentStepIndex: number;
-  currentSet: number; // for strength steps
-  remainingSec: number; // for timed steps
+  currentSet: number; 
+  remainingSec: number; 
   notes: string;
 };
 
@@ -240,24 +240,24 @@ function savePersisted(p: Persisted) {
 export function WorkoutsTab() {
   const [persisted, setPersisted] = useState<Persisted>(() => loadPersisted());
 
-  // filters
+  
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState<Category | "All">("All");
   const [difficulty, setDifficulty] = useState<Difficulty | "All">("All");
   const [equipment, setEquipment] = useState<Equipment | "All">("All");
   const [maxDuration, setMaxDuration] = useState<number>(60);
 
-  // UI state
+  
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [tab, setTab] = useState<"library" | "plan" | "history">("library");
 
-  // live session
+  
   const [session, setSession] = useState<SessionState | null>(() => persisted.session);
   const tickRef = useRef<number | null>(null);
   const lastTickRef = useRef<number>(Date.now());
 
-  // persist
+  
   useEffect(() => {
     savePersisted({ ...persisted, session });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -293,7 +293,7 @@ export function WorkoutsTab() {
   }
 
   function generateWeeklyPlan() {
-    // balanced plan: Strength x2, Cardio x2, Mobility x1, Core x1, Optional HIIT x1
+    
     const pick = (id: string) => id;
 
     const days: WeeklyPlan["days"] = [
@@ -321,7 +321,7 @@ export function WorkoutsTab() {
     const w = WORKOUTS.find((x) => x.id === workoutId);
     if (!w) return;
 
-    // start on first step; set defaults
+    
     const first = w.steps[0];
     const remainingSec = first.durationSec ?? (first.restSec ?? 0);
 
@@ -364,7 +364,7 @@ export function WorkoutsTab() {
         const currentStep = w.steps[prev.currentStepIndex];
         if (!currentStep) return prev;
 
-        // only tick down for timed steps (work/rest)
+        
         const isTimed = typeof currentStep.durationSec === "number";
         if (!isTimed) return prev;
 
@@ -373,7 +373,7 @@ export function WorkoutsTab() {
           return { ...prev, remainingSec: nextRemain };
         }
 
-        // time finished -> auto advance
+        
         return advanceStep(prev, w, true);
       });
     }, 250);
@@ -401,21 +401,21 @@ export function WorkoutsTab() {
     const step = w.steps[prev.currentStepIndex];
     if (!step) return prev;
 
-    // If strength step has sets, move set counter, else move next step
+    
     if (step.sets && step.sets > 0) {
-      // after each set, you rest (restSec) if provided, but we keep it simple:
-      // manual "Complete Set" will manage set increments; timer auto-advance only for timed steps.
+      
+      
       if (fromTimer) {
-        // timed steps shouldn't come here for strength
+        
         return prev;
       }
     }
 
     const nextIndex = clamp(prev.currentStepIndex + 1, 0, w.steps.length);
     if (nextIndex >= w.steps.length) {
-      // workout finished
+      
       finishSession(prev, w);
-      return prev; // session cleared in finishSession
+      return prev; 
     }
 
     const nextStep = w.steps[nextIndex];
@@ -467,7 +467,7 @@ export function WorkoutsTab() {
         return { ...prev, currentSet: prev.currentSet + 1 };
       }
 
-      // sets completed -> move next
+      
       return advanceStep(prev, w, false);
     });
   }
@@ -537,7 +537,7 @@ export function WorkoutsTab() {
         </div>
       </div>
 
-      {/* Active session banner */}
+       
       {sessionView && (
         <div className="wk-session card">
           <div className="wk-session-left">
@@ -561,10 +561,10 @@ export function WorkoutsTab() {
         </div>
       )}
 
-      {/* Main content */}
+       
       {tab === "library" && (
         <div className="wk-grid">
-          {/* Filters */}
+           
           <div className="card wk-filters">
             <div className="wk-panel-head">
               <h3>Filters</h3>
@@ -636,7 +636,7 @@ export function WorkoutsTab() {
             </div>
           </div>
 
-          {/* List */}
+           
           <div className="card wk-list">
             <div className="wk-panel-head">
               <h3>Workout library</h3>
@@ -763,7 +763,7 @@ export function WorkoutsTab() {
         </div>
       )}
 
-      {/* Drawer */}
+       
       {drawerOpen && selectedWorkout && (
         <div className="wk-modal" role="dialog" aria-modal="true">
           <div className="wk-drawer card">
@@ -827,7 +827,7 @@ export function WorkoutsTab() {
         </div>
       )}
 
-      {/* Session full-screen panel */}
+       
       {sessionView && (
         <div className="wk-modal" role="dialog" aria-modal="true">
           <div className="wk-session-screen card">
@@ -916,7 +916,7 @@ export function WorkoutsTab() {
                     onClick={() => {
                       const w = sessionView.w;
                       const s = session!;
-                      // finalize immediately
+                      
                       const totalSeconds = Math.max(1, Math.floor((Date.now() - s.startedAt) / 1000));
                       const completed: CompletedSession = {
                         id: uid("session"),

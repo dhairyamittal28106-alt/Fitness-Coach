@@ -13,7 +13,7 @@ interface Props {
 export function ModelBanner({ state, progress, error, onLoad, label, category }: Props) {
   if (state === 'ready') return null;
 
-  // Hide banner if the model is already on disk and we are just waiting to load it
+  
   const isDownloaded = ModelManager.getModels()
     .filter(m => m.modality === category)
     .some(m => m.status === 'downloaded' || m.status === 'loaded');

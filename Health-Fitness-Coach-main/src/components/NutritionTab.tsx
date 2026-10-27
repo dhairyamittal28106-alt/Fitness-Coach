@@ -1,15 +1,15 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 
-/**
- * NutritionTab (NO AI / NO MODEL / NO CAMERA)
- * Premium nutrition tracker:
- * - Profile (age/sex/height/weight/activity/goal)
- * - Calculates BMR + TDEE + calorie target
- * - Macro targets (Protein/Carbs/Fat)
- * - Offline food DB + Custom foods
- * - Food diary logging + totals + remaining
- * - LocalStorage persistence
- */
+
+
+
+
+
+
+
+
+
+
 
 type Sex = "female" | "male";
 type ActivityLevel = "sedentary" | "light" | "moderate" | "active" | "very_active";
@@ -19,11 +19,11 @@ type Macro = { proteinG: number; carbsG: number; fatG: number };
 type FoodItem = {
   id: string;
   name: string;
-  // per 100g OR per serving (we store both mode + base amount)
+  
   mode: "per100g" | "perServing";
-  baseAmount: number; // 100 for per100g, 1 for perServing
-  unitLabel: string; // "g" or "serving"
-  calories: number; // per baseAmount
+  baseAmount: number; 
+  unitLabel: string; 
+  calories: number; 
   proteinG: number;
   carbsG: number;
   fatG: number;
@@ -32,11 +32,11 @@ type FoodItem = {
 
 type DiaryEntry = {
   id: string;
-  dateISO: string; // YYYY-MM-DD
+  dateISO: string; 
   foodId: string;
   foodName: string;
-  qty: number; // grams or servings
-  unitLabel: string; // "g" or "serving"
+  qty: number; 
+  unitLabel: string; 
   calories: number;
   proteinG: number;
   carbsG: number;
@@ -53,17 +53,17 @@ type Profile = {
   activity: ActivityLevel;
   goal: Goal;
 
-  // targets overrides (optional)
+  
   targetCalories?: number;
 
-  // macro strategy
-  proteinPerKg: number; // default 1.6g/kg
-  fatPercent: number; // default 25%
+  
+  proteinPerKg: number; 
+  fatPercent: number; 
 };
 
 const STORAGE_KEY = "fitnesscoach:nutrition:v2";
 
-/** --- Helpers --- */
+ 
 function clamp(n: number, min: number, max: number) {
   return Math.max(min, Math.min(max, n));
 }
@@ -96,9 +96,9 @@ function activityMultiplier(a: ActivityLevel) {
   }
 }
 function calcBMR(profile: Profile) {
-  // Mifflin-St Jeor (kg, cm, years)
-  // male: 10w + 6.25h - 5a + 5
-  // female: 10w + 6.25h - 5a - 161
+  
+  
+  
   const w = profile.weightKg;
   const h = profile.heightCm;
   const a = profile.age;
@@ -109,15 +109,15 @@ function calcTDEE(profile: Profile) {
   return calcBMR(profile) * activityMultiplier(profile.activity);
 }
 function goalDelta(goal: Goal) {
-  // conservative deltas
+  
   if (goal === "lose") return -400;
   if (goal === "gain") return +300;
   return 0;
 }
 
-/** Offline mini food database (editable + user can add more) */
+ 
 const DEFAULT_FOODS: FoodItem[] = [
-  // Indian-ish + common foods. Values are approximate.
+  
   {
     id: "rice_cooked",
     name: "Rice (cooked)",
@@ -323,7 +323,7 @@ function loadState(): AppState {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) throw new Error("no-state");
     const parsed = JSON.parse(raw) as AppState;
-    // basic guard
+    
     if (!parsed.profile || !parsed.foods || !parsed.diary) throw new Error("bad-state");
     return {
       ...parsed,
@@ -343,7 +343,7 @@ function saveState(s: AppState) {
 }
 
 function scaleFood(food: FoodItem, qty: number): Macro & { calories: number } {
-  // qty in grams if per100g; qty in servings if perServing
+  
   const factor = food.mode === "per100g" ? qty / 100 : qty / 1;
   return {
     calories: food.calories * factor,
@@ -477,7 +477,7 @@ export function NutritionTab() {
     return state.foods.find((f) => f.id === selectedFoodId) || null;
   }, [selectedFoodId, state.foods]);
 
-  // auto-set qty when selecting a food
+  
   useEffect(() => {
     if (!selectedFood) return;
     if (selectedFood.mode === "per100g") setQty(100);
@@ -567,7 +567,7 @@ export function NutritionTab() {
     setQuery(item.name);
   }
 
-  // simple meal split suggestion
+  
   const plan = useMemo(() => {
     const c = computed.targetCalories;
     const p = computed.macros.proteinG;
@@ -706,7 +706,7 @@ export function NutritionTab() {
       </div>
 
       <div className="nutri-main">
-        {/* Left: Profile */}
+         
         <div className="card panel">
           <div className="panel-head">
             <h3>Profile & Targets</h3>
@@ -841,7 +841,7 @@ export function NutritionTab() {
           </div>
         </div>
 
-        {/* Right: Tracker */}
+         
         <div className="card panel">
           <div className="panel-head">
             <h3>Food Tracker</h3>
@@ -1036,7 +1036,7 @@ export function NutritionTab() {
         </div>
       </div>
 
-      {/* Add custom food modal */}
+       
       {showAddFood && (
         <div className="modal-backdrop" role="dialog" aria-modal="true">
           <div className="modal">

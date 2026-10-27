@@ -25,15 +25,15 @@ export function DownloadModal({ onClose }: Props) {
         if (downloading) return;
         setDownloading(true);
         try {
-            // Get a fresh list of models to download
+            
             const currentModels = ModelManager.getModels();
             const toDownload = currentModels.filter(m => m.status !== 'downloaded' && m.status !== 'loaded');
 
             for (const model of toDownload) {
                 console.log(`[DownloadModal] Starting download for ${model.name}...`);
                 await ModelManager.downloadModel(model.id);
-                // After each download, the ModelManager.onChange listener will trigger a re-render
-                // But we wait here to ensure full sequential completion
+                
+                
             }
             console.log("[DownloadModal] All requested models downloaded.");
         } catch (err) {

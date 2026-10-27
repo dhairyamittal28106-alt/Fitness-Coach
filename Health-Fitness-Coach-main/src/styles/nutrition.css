@@ -1,4 +1,4 @@
-/* Premium UI (no external libs) */
+ 
 .nutri-wrap {
   padding: 18px;
   display: flex;
@@ -402,7 +402,7 @@ backdrop-filter: blur(10px);
   margin-top: 10px;
 }
 
-/* Modal */
+ 
 .modal-backdrop {
   position: fixed;
   inset: 0;
@@ -436,7 +436,7 @@ backdrop-filter: blur(10px);
   margin-top: 12px;
 }
 
-/* Responsive */
+ 
 @media (max-width: 1100px) {
   .nutri-cards {
     grid-template-columns: 1fr;

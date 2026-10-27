@@ -31,7 +31,7 @@ function dist(a: { x: number; y: number }, b: { x: number; y: number }) {
 }
 
 function angleABC(a: any, b: any, c: any) {
-  // angle at B
+  
   const ab = { x: a.x - b.x, y: a.y - b.y };
   const cb = { x: c.x - b.x, y: c.y - b.y };
   const dot = ab.x * cb.x + ab.y * cb.y;
@@ -51,7 +51,7 @@ function fmt(n: number, d = 0) {
 }
 
 function pickSide(landmarks: any[], idxL: number, idxR: number) {
-  // choose side with higher visibility if available; fallback left
+  
   const L = landmarks[idxL];
   const R = landmarks[idxR];
   const vL = L?.visibility ?? 1;
@@ -90,7 +90,7 @@ export function PostureTab() {
     setCameraOn(false);
   }, []);
 
-  // init pose landmarker once
+  
   useEffect(() => {
     let cancelled = false;
 
@@ -156,7 +156,7 @@ export function PostureTab() {
     const vw = v.videoWidth || 1280;
     const vh = v.videoHeight || 720;
 
-    // match actual video pixels for correct overlay scaling
+    
     if (c.width !== vw) c.width = vw;
     if (c.height !== vh) c.height = vh;
   }
@@ -171,10 +171,10 @@ export function PostureTab() {
       };
     }
 
-    // MediaPipe Pose landmark indexes:
-    // 11 L shoulder, 12 R shoulder, 23 L hip, 24 R hip, 25 L knee, 26 R knee, 27 L ankle, 28 R ankle
-    // 13 L elbow, 14 R elbow, 15 L wrist, 16 R wrist
-    // 0 nose
+    
+    
+    
+    
 
     const Ls = lm[11], Rs = lm[12];
     const Lh = lm[23], Rh = lm[24];
@@ -183,7 +183,7 @@ export function PostureTab() {
     const Le = lm[13], Re = lm[14];
     const Lw = lm[15], Rw = lm[16];
 
-    // Basic “confidence” check using visibility
+    
     const visAvg =
       avg(avg(Ls.visibility ?? 1, Rs.visibility ?? 1), avg(Lh.visibility ?? 1, Rh.visibility ?? 1));
     if (visAvg < 0.4) {
@@ -194,11 +194,11 @@ export function PostureTab() {
       };
     }
 
-    // Symmetry / alignment metrics (using normalized coords)
-    const shoulderTilt = Math.abs((Ls.y ?? 0) - (Rs.y ?? 0)); // smaller better
+    
+    const shoulderTilt = Math.abs((Ls.y ?? 0) - (Rs.y ?? 0)); 
     const hipTilt = Math.abs((Lh.y ?? 0) - (Rh.y ?? 0));
 
-    // choose dominant side (better visibility) for angle checks
+    
     const kneePick = pickSide(lm, 25, 26);
     const anklePick = pickSide(lm, 27, 28);
     const hipPick = pickSide(lm, 23, 24);
@@ -213,13 +213,13 @@ export function PostureTab() {
     const elbow = elbowPick.p;
     const wrist = wristPick.p;
 
-    // angles
-    const kneeAngle = angleABC(hip, knee, ankle); // squat depth
-    const hipAngle = angleABC(shoulder, hip, knee); // torso vs thigh
-    const elbowAngle = angleABC(shoulder, elbow, wrist); // pushup lock
+    
+    const kneeAngle = angleABC(hip, knee, ankle); 
+    const hipAngle = angleABC(shoulder, hip, knee); 
+    const elbowAngle = angleABC(shoulder, elbow, wrist); 
     const shoulderToHip = dist(shoulder, hip);
 
-    // Generic “straightness”: shoulder-hip-knee angle near 180 => straighter
+    
     const torsoAngle = angleABC(shoulder, hip, knee);
 
     const tips: string[] = [];
@@ -230,13 +230,13 @@ export function PostureTab() {
       "Torso angle": fmt(torsoAngle, 0) + "°",
     };
 
-    // Common checks (standing)
+    
     if (shoulderTilt > 0.03) tips.push("Level your shoulders (avoid leaning).");
     if (hipTilt > 0.03) tips.push("Level your hips (avoid shifting weight to one side).");
 
-    // Exercise-specific rules
+    
     if (ex === "standing") {
-      // simple: torso reasonably vertical (hipAngle ~ 170-180)
+      
       if (torsoAngle < 155) tips.push("Stand taller: lift chest, brace core, avoid bending.");
       const status =
         tips.length === 0 ? "correct" : tips.length <= 2 ? "warning" : "bad";
@@ -249,10 +249,10 @@ export function PostureTab() {
     }
 
     if (ex === "squat") {
-      // Good squat (rough, practical rules):
-      // - knees not collapsing inward (hard to check without full frontal; we'll check knee x vs ankle x on chosen side)
-      // - torso not collapsing forward too much
-      // - depth: kneeAngle ~ 70-110 (lower = deeper)
+      
+      
+      
+      
       const kneeOverToe = Math.abs((knee.x ?? 0) - (ankle.x ?? 0));
       metrics["Knee over toe"] = fmt(kneeOverToe * 100, 1) + "%";
 
@@ -272,9 +272,9 @@ export function PostureTab() {
     }
 
     if (ex === "pushup") {
-      // Push-up checks (side view works best; but we’ll do best effort):
-      // - body line straight: shoulder-hip-ankle ~ 170-180
-      // - elbows not flared too much is tricky without 3D; we’ll focus on line + elbow bend
+      
+      
+      
       const bodyLine = angleABC(shoulder, hip, ankle);
       metrics["Body line"] = fmt(bodyLine, 0) + "°";
       metrics["Elbow angle"] = fmt(elbowAngle, 0) + "°";
@@ -321,7 +321,7 @@ export function PostureTab() {
     const landmarker = landmarkerRef.current;
     if (!v || !c || !landmarker) return;
 
-    // FPS throttle
+    
     const now = performance.now();
     const minDelta = 1000 / DEFAULT_FPS_TARGET;
     if (now - lastTSRef.current < minDelta) {
@@ -335,14 +335,14 @@ export function PostureTab() {
     const ctx = c.getContext("2d");
     if (!ctx) return;
 
-    // detect
+    
     const res = landmarker.detectForVideo(v, now);
 
-    // draw video frame
+    
     ctx.clearRect(0, 0, c.width, c.height);
     ctx.drawImage(v, 0, 0, c.width, c.height);
 
-    // draw landmarks
+    
     const drawing = new DrawingUtils(ctx);
     const lm = res.landmarks?.[0];
     if (lm && lm.length) {
@@ -350,7 +350,7 @@ export function PostureTab() {
       drawing.drawConnectors(lm, PoseLandmarker.POSE_CONNECTIONS);
     }
 
-    // compute feedback
+    
     setFeedback(makeFeedback(exercise, res));
 
     rafRef.current = requestAnimationFrame(loop);
